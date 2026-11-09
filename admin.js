@@ -22,9 +22,16 @@ $('btnLogin').addEventListener('click',async function(){
   if(!e||!p){say('loginMsg','Zadejte e-mail a heslo.','err');return}
   this.disabled=true;
   var r=await sb.auth.signInWithPassword({email:e,password:p});
-  if(r.error)say('loginMsg','Špatný e-mail nebo heslo.','err');
+  if(r.error){
+    var m=r.error.message||'';
+    if(/not confirmed/i.test(m))m='E-mail není v Supabase potvrzený. V Authentication → Users účet potvrďte, nebo ho vytvořte se zapnutým Auto Confirm User.';
+    else if(/invalid login/i.test(m))m='Špatný e-mail nebo heslo, nebo takový účet v Supabase neexistuje. Účty vedení se zakládají v Authentication → Users → Add user.';
+    else if(/fetch|network/i.test(m))m='Nepodařilo se spojit se Supabase. Zkontrolujte připojení.';
+    say('loginMsg',m,'err');
+  }else say('loginMsg','');
   this.disabled=false;
 });
+$('aMail').addEventListener('keydown',function(e){if(e.key==='Enter')$('btnLogin').click()});
 $('aPass').addEventListener('keydown',function(e){if(e.key==='Enter')$('btnLogin').click()});
 $('btnOut').addEventListener('click',function(){sb.auth.signOut()});
 $('btnRefresh').addEventListener('click',load);

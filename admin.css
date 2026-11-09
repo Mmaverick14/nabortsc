@@ -1,0 +1,48 @@
+body.adm{padding:0}
+.adm main{max-width:78rem;padding:1.5rem 1.5rem 4rem}
+.top{display:flex;align-items:center;gap:1.2rem;padding:.9rem 1.5rem;border-bottom:1px solid var(--border);background:#0b0b0a;position:sticky;top:0;z-index:5}
+.top .logo{padding:0;border:0;font-size:1.2rem}
+.top .ttl{font:600 1.35rem var(--serif);color:var(--textb)}
+#me{margin-left:auto;display:flex;align-items:center;gap:1rem;font-size:.9rem;color:var(--textb)}
+#me button{background:none;border:0;color:var(--muted);font:500 .85rem var(--sans);text-decoration:underline;text-underline-offset:3px;cursor:pointer}
+#me button:hover{color:var(--acc)}
+.narrow{max-width:26rem;margin:4rem auto 0}
+.filters{display:flex;flex-wrap:wrap;gap:.4rem;margin-bottom:1rem}
+.filters button{background:transparent;border:1px solid var(--border);color:var(--text);font:500 .85rem var(--sans);padding:.45rem 1rem;cursor:pointer}
+.filters button:hover{border-color:var(--acc-dim);color:var(--acc)}
+.filters button.on{border-color:var(--acc);color:var(--acc);background:rgba(196,154,20,.1)}
+.split{display:grid;grid-template-columns:21rem 1fr;gap:1.2rem;align-items:start}
+.list{list-style:none;display:flex;flex-direction:column;gap:2px;max-height:calc(100vh - 11rem);overflow-y:auto}
+.list li{background:var(--card);border:1px solid var(--border);border-left:3px solid var(--acc-dim);padding:.8rem 1rem;cursor:pointer}
+.list li:hover{background:var(--surf)}
+.list li.on{border-color:var(--acc);background:var(--surf)}
+.list li.accepted{border-left-color:var(--green)}.list li.rejected{border-left-color:var(--red);opacity:.65}
+.list b{display:block;font:600 1.15rem var(--serif);color:var(--textb)}
+.list small{display:flex;gap:.6rem;flex-wrap:wrap;color:var(--muted);font-size:.8rem;margin-top:.15rem}
+.pro{color:var(--green)}.con{color:var(--red)}.abs{color:var(--text)}
+.detail{background:var(--card);border:1px solid var(--border);padding:2rem;min-height:20rem}
+.detail h2{margin-bottom:.3rem}
+.detail .meta{color:var(--text);margin-bottom:1.4rem}
+.detail h4{font:600 .85rem var(--sans);color:var(--acc);margin:1.3rem 0 .2rem}
+.detail p.ans{white-space:pre-wrap;color:var(--textb);line-height:1.6}
+.dcrow{display:flex;align-items:center;gap:.6rem;flex-wrap:wrap}
+.dcrow code{background:var(--surf);border:1px solid var(--brite);padding:.2rem .6rem;color:var(--textb);font-size:.95rem}
+.mini{background:transparent;border:1px solid var(--brite);color:var(--text);font:500 .75rem var(--sans);padding:.3rem .7rem;cursor:pointer}
+.mini:hover{border-color:var(--acc);color:var(--acc)}
+.sep{height:1px;background:var(--border);margin:1.8rem 0}
+.votes{display:flex;gap:.5rem;flex-wrap:wrap}
+.votes button{flex:1;min-width:7rem;background:transparent;border:1px solid var(--brite);color:var(--text);font:500 .9rem var(--sans);padding:.7rem;cursor:pointer}
+.votes button[data-v=pro].on{background:rgba(79,209,139,.15);border-color:var(--green);color:var(--green)}
+.votes button[data-v=proti].on{background:rgba(232,105,90,.15);border-color:var(--red);color:var(--red)}
+.votes button[data-v=zdrz].on{background:rgba(196,154,20,.15);border-color:var(--acc);color:var(--acc)}
+.tally{margin:.6rem 0;color:var(--text);font-size:.9rem}
+.rv{border-left:2px solid var(--brite);padding:.2rem 0 .2rem .9rem;margin-bottom:.7rem}
+.rv b{color:var(--textb)}.rv p{white-space:pre-wrap;font-size:.95rem}
+#myNote{width:100%;min-height:6rem;background:var(--surf);border:1px solid var(--brite);color:var(--textb);font:400 1rem/1.5 var(--sans);padding:.7rem;resize:vertical;outline:0}
+#myNote:focus{border-color:var(--acc)}
+.acts{display:flex;gap:.5rem;flex-wrap:wrap;margin-top:.8rem}
+.badge{display:inline-block;padding:.15rem .6rem;border:1px solid;font-size:.8rem;margin-left:.5rem;vertical-align:middle}
+.badge.accepted{color:var(--green)}.badge.rejected{color:var(--red)}
+.empty{color:var(--muted);padding:2rem 0}
+@media(max-width:860px){.split{grid-template-columns:1fr}.list{max-height:16rem}.adm main{padding:1rem}.top .ttl{display:none}.detail{padding:1.2rem}}
+#me a{color:var(--acc);font:500 .85rem var(--sans);text-decoration:underline;text-underline-offset:3px}

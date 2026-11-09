@@ -11,6 +11,19 @@ var CFG={
 /* ═══════════════════ */
 var $=function(id){return document.getElementById(id)};
 var step=0,STEPS=[['fName','fAge','fPhone','fOrigin','fDiscord'],['fPast','fWhy'],['fSkills']];
+/* texty webu: výchozí jsou v HTML, úpravy vedení se načtou z databáze (klíče txt_<id>) */
+document.querySelectorAll('[data-t]').forEach(function(el){el.dataset.d=el.textContent});
+var TXT_READY=fetch(CFG.SUPABASE_URL+'/rest/v1/'+CFG.TABLE+'?select=key,value&key=like.txt_*',{headers:{apikey:CFG.SUPABASE_ANON_KEY,Authorization:'Bearer '+CFG.SUPABASE_ANON_KEY}})
+  .then(function(r){return r.ok?r.json():[]}).then(function(rows){
+    rows.forEach(function(x){var el=document.querySelector('[data-t="'+x.key.slice(4)+'"]');if(el&&typeof x.value==='string'&&x.value.trim())el.textContent=x.value});
+  }).catch(function(){});
+/* ?upravit = režim úprav textů pro vedení */
+if(/[?&]upravit/.test(location.search)){
+  var s1=document.createElement('script');
+  s1.src='https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2.45.4/dist/umd/supabase.min.js';
+  s1.onload=function(){var s2=document.createElement('script');s2.src='edit.js';document.body.appendChild(s2)};
+  document.body.appendChild(s1);
+}
 function say(id,t,c){var e=$(id);e.textContent=t||'';e.className='msg'+(c?' '+c:'')}
 function val(id){return $(id).value.trim()}
 function cut(s,n){s=(s||'').trim();return s?(s.length>n?s.slice(0,n-1)+'…':s):'—'}

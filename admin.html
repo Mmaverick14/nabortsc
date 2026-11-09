@@ -1,0 +1,35 @@
+<!DOCTYPE html>
+<html lang="cs">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="robots" content="noindex,nofollow">
+<title>TSC – Hodnocení přihlášek</title>
+<link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,500;0,600;0,700;1,500&family=Jost:wght@400;500;600&family=Orbitron:wght@900&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="style.css">
+<link rel="stylesheet" href="admin.css">
+</head>
+<body class="adm">
+<header class="top">
+  <span class="logo">TSC</span><span class="ttl">Hodnocení přihlášek</span>
+  <div id="me" class="hide"><span id="meName"></span><a href="index.html?upravit">Upravit texty webu</a><button type="button" id="btnRefresh">Obnovit</button><button type="button" id="btnOut">Odhlásit se</button></div>
+</header>
+<main>
+  <div id="login" class="panel narrow">
+    <h3>Vedení</h3>
+    <p class="sub">Přihlášení jen pro členy vedení.</p>
+    <div class="f"><label for="aMail">E-mail</label><input id="aMail" type="email" autocomplete="email"></div>
+    <div class="f"><label for="aPass">Heslo</label><input id="aPass" type="password" autocomplete="current-password"></div>
+    <button class="btn" id="btnLogin" type="button"><span>Přihlásit se</span></button>
+    <p class="msg" id="loginMsg" role="status"></p>
+  </div>
+  <div id="board" class="hide">
+    <div class="filters" id="filters"></div>
+    <p class="msg" id="boardMsg" role="status"></p>
+    <div class="split"><ul id="list" class="list"></ul><article id="detail" class="detail"></article></div>
+  </div>
+</main>
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2.45.4/dist/umd/supabase.min.js"></script>
+<script src="admin.js"></script>
+</body>
+</html>

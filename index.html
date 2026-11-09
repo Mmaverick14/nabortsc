@@ -12,108 +12,95 @@
 <body>
 
 <aside class="rail">
-  <a class="logo" href="#uvod">TSC</a>
+  <a class="logo" href="#uvod" data-t="tlogo">TSC</a>
   <nav aria-label="Kapitoly">
-    <a href="#uvod" class="on" data-s="uvod"><i>I</i>Kdo jsme</a>
-    <a href="#kodex" data-s="kodex"><i>II</i>Kodex</a>
-    <a href="#cesta" data-s="cesta"><i>III</i>Cesta dovnitř</a>
-    <a href="#prihlaska" data-s="prihlaska"><i>IV</i>Přihláška</a>
+    <a href="#uvod" class="on" data-s="uvod"><i>I</i><span data-t="t01">Kdo jsme</span></a>
+    <a href="#kodex" data-s="kodex"><i>II</i><span data-t="t02">Kodex</span></a>
+    <a href="#cesta" data-s="cesta"><i>III</i><span data-t="t03">Cesta dovnitř</span></a>
+    <a href="#prihlaska" data-s="prihlaska"><i>IV</i><span data-t="t04">Přihláška</span></a>
   </nav>
-  <div class="who" id="who"><span id="whoName"></span><button type="button" id="btnOut">Odhlásit se</button></div>
 </aside>
 
 <main>
   <section id="uvod" class="ch hero">
-    <p class="kicker">Nábor</p>
-    <h1>Někdo musí držet město pohromadě.</h1>
-    <p class="lead">Začínali jsme jako hrstka lidí, kteří se znali z ulice a věřili si víc než komukoli jinému. Dnes je z nás organizace s pevným jádrem a jménem, které se ve městě nevyslovuje nahlas.</p>
-    <p>Nehledáme hrdiny ani bouřliváky. Hledáme ty, kdo umí mlčet, plnit úkoly a stát za svými lidmi, když je to nejtěžší.</p>
-    <a class="btn" href="#prihlaska"><span>Podat přihlášku</span></a>
+    <p class="kicker" data-t="t05">Nábor</p>
+    <h1 data-t="t06">Někdo musí držet město pohromadě.</h1>
+    <p class="lead" data-t="t07">Začínali jsme jako hrstka lidí, kteří se znali z ulice a věřili si víc než komukoli jinému. Dnes je z nás organizace s pevným jádrem a jménem, které se ve městě nevyslovuje nahlas.</p>
+    <p data-t="t08">Nehledáme hrdiny ani bouřliváky. Hledáme ty, kdo umí mlčet, plnit úkoly a stát za svými lidmi, když je to nejtěžší.</p>
+    <a class="btn" href="#prihlaska"><span data-t="t09">Podat přihlášku</span></a>
   </section>
 
   <section id="kodex" class="ch">
-    <h2>Kodex</h2>
+    <h2 data-t="t10">Kodex</h2>
     <dl class="code">
-      <div><dt>Frakce jde před jednotlivcem</dt><dd>Kdo hraje sám za sebe, u nás dlouho nevydrží.</dd></div>
-      <div><dt>Slovo platí</dt><dd>Co slíbíte, to uděláte. Jméno si nikdo nekoupí, získá se činy.</dd></div>
-      <div><dt>Hlava před pěstí</dt><dd>Rozvaha je u nás cennější než síla. Nejdřív zvažte riziko, pak jednejte.</dd></div>
-      <div><dt>Co se stane uvnitř, zůstane uvnitř</dt><dd>Mlčenlivost je podmínka. Kdo mluví, odchází.</dd></div>
+      <div><dt data-t="t11">Frakce jde před jednotlivcem</dt><dd data-t="t12">Kdo hraje sám za sebe, u nás dlouho nevydrží.</dd></div>
+      <div><dt data-t="t13">Slovo platí</dt><dd data-t="t14">Co slíbíte, to uděláte. Jméno si nikdo nekoupí, získá se činy.</dd></div>
+      <div><dt data-t="t15">Hlava před pěstí</dt><dd data-t="t16">Rozvaha je u nás cennější než síla. Nejdřív zvažte riziko, pak jednejte.</dd></div>
+      <div><dt data-t="t17">Co se stane uvnitř, zůstane uvnitř</dt><dd data-t="t18">Mlčenlivost je podmínka. Kdo mluví, odchází.</dd></div>
     </dl>
   </section>
 
   <section id="cesta" class="ch">
-    <h2>Cesta dovnitř</h2>
+    <h2 data-t="t19">Cesta dovnitř</h2>
     <ol class="path">
-      <li><b>Přihláška</b><span>Přihlásíte se a vyplníte formulář. Vedení ji přečte.</span></li>
-      <li><b>Pohovor</b><span>Sejdete se s někým z vedení. Zajímá nás vaše minulost a vaše důvody.</span></li>
-      <li><b>Zkušební doba</b><span>Dostanete menší úkoly. Sledujeme, jak jednáte, ne kolik toho řeknete.</span></li>
-      <li><b>Přijetí</b><span>Pokud obstojíte, získáte své místo v hierarchii.</span></li>
+      <li><b data-t="t20">Přihláška</b><span data-t="t21">Přihlásíte se a vyplníte formulář. Vedení ji přečte.</span></li>
+      <li><b data-t="t22">Pohovor</b><span data-t="t23">Sejdete se s někým z vedení. Zajímá nás vaše minulost a vaše důvody.</span></li>
+      <li><b data-t="t24">Zkušební doba</b><span data-t="t25">Dostanete menší úkoly. Sledujeme, jak jednáte, ne kolik toho řeknete.</span></li>
+      <li><b data-t="t26">Přijetí</b><span data-t="t27">Pokud obstojíte, získáte své místo v hierarchii.</span></li>
     </ol>
   </section>
 
   <section id="prihlaska" class="ch apply">
-    <h2>Přihláška</h2>
+    <h2 data-t="t28">Přihláška</h2>
 
-    <div id="authView" class="panel">
-      <p class="sub">Nejdřív se přihlaste, ať víme, od koho přihláška přišla.</p>
-      <button class="btn dc" id="btnDiscord" type="button"><span>Pokračovat přes Discord</span></button>
-      <div class="or">nebo e-mailem</div>
-      <div class="tabs" role="tablist">
-        <button class="on" data-t="in" type="button">Přihlásit se</button>
-        <button data-t="up" type="button">Vytvořit účet</button>
-      </div>
-      <div class="f"><label for="aMail">E-mail</label><input id="aMail" type="email" autocomplete="email"></div>
-      <div class="f"><label for="aPass">Heslo</label><input id="aPass" type="password" autocomplete="current-password"></div>
-      <button class="btn" id="btnAuth" type="button"><span>Přihlásit se</span></button>
-      <p class="msg" id="authMsg" role="status"></p>
-    </div>
 
-    <form id="appForm" class="panel hide" novalidate>
+    <form id="appForm" class="panel" novalidate>
       <input class="hp" type="text" id="hp" tabindex="-1" autocomplete="off" aria-hidden="true">
+      <p class="sub" data-t="t29">Odpovídejte jako vaše postava. Ozveme se vám na Discordu.</p>
       <ol class="prog" id="prog">
-        <li class="on">Kdo jste</li><li>Vaše cesta</li><li>Co nabídnete</li>
+        <li class="on" data-t="t30">Kdo jste</li><li data-t="t31">Vaše cesta</li><li data-t="t32">Co nabídnete</li>
       </ol>
 
       <fieldset class="step on" data-i="0">
         <div class="row2">
-          <div class="f"><label for="fName">Jméno a příjmení</label><input id="fName" maxlength="60"></div>
-          <div class="f"><label for="fAge">Věk</label><input id="fAge" type="number" min="18" max="90"></div>
+          <div class="f"><label for="fName" data-t="t33">Jméno a příjmení</label><input id="fName" maxlength="60"></div>
+          <div class="f"><label for="fAge" data-t="t34">Věk</label><input id="fAge" type="number" min="18" max="90"></div>
         </div>
         <div class="row2">
-          <div class="f"><label for="fPhone">Telefonní číslo</label><input id="fPhone" maxlength="20" inputmode="tel"></div>
-          <div class="f"><label for="fOrigin">Odkud pocházíte</label><input id="fOrigin" maxlength="80"></div>
+          <div class="f"><label for="fPhone" data-t="t35">Telefonní číslo</label><input id="fPhone" maxlength="20" inputmode="tel"></div>
+          <div class="f"><label for="fOrigin" data-t="t36">Odkud pocházíte</label><input id="fOrigin" maxlength="80"></div>
         </div>
+        <div class="f"><label for="fDiscord" data-t="t37">Kontakt na Discordu</label><small data-t="t38">Napíšeme vám tam, pokud o vás projevíme zájem.</small><input id="fDiscord" maxlength="40" autocomplete="off"></div>
       </fieldset>
 
       <fieldset class="step" data-i="1">
-        <div class="f"><label for="fPast">Vaše minulost</label><small>Kdo jste, čím jste se živil(a), co vás přivedlo do města.</small><textarea id="fPast" maxlength="900"></textarea></div>
-        <div class="f"><label for="fWhy">Proč právě my</label><small>Co hledáte a co od nás čekáte.</small><textarea id="fWhy" maxlength="700"></textarea></div>
+        <div class="f"><label for="fPast" data-t="t39">Vaše minulost</label><small data-t="t40">Kdo jste, čím jste se živil(a), co vás přivedlo do města.</small><textarea id="fPast" maxlength="900"></textarea></div>
+        <div class="f"><label for="fWhy" data-t="t41">Proč právě my</label><small data-t="t42">Co hledáte a co od nás čekáte.</small><textarea id="fWhy" maxlength="700"></textarea></div>
       </fieldset>
 
       <fieldset class="step" data-i="2">
-        <div class="f"><label for="fSkills">Co umíte a co nabídnete</label><small>Dovednosti, kontakty, vybavení, zkušenosti.</small><textarea id="fSkills" maxlength="700"></textarea></div>
-        <div class="f"><label for="fRef">Kdo vás doporučil <em>(nepovinné)</em></label><input id="fRef" maxlength="80"></div>
-        <div class="f"><label for="fPrev">Dřívější skupina <em>(nepovinné)</em></label><small>Pokud jste v nějaké byl(a), v jaké a proč jste odešel(a).</small><textarea id="fPrev" maxlength="500" class="short"></textarea></div>
+        <div class="f"><label for="fSkills" data-t="t43">Co umíte a co nabídnete</label><small data-t="t44">Dovednosti, kontakty, vybavení, zkušenosti.</small><textarea id="fSkills" maxlength="700"></textarea></div>
+        <div class="f"><label for="fRef"><span data-t="t45">Kdo vás doporučil</span> <em data-t="t46">(nepovinné)</em></label><input id="fRef" maxlength="80"></div>
+        <div class="f"><label for="fPrev"><span data-t="t47">Dřívější skupina</span> <em data-t="t48">(nepovinné)</em></label><small data-t="t49">Pokud jste v nějaké byl(a), v jaké a proč jste odešel(a).</small><textarea id="fPrev" maxlength="500" class="short"></textarea></div>
       </fieldset>
 
       <p class="msg" id="formMsg" role="status"></p>
       <div class="nav">
-        <button class="btn ghost" id="btnBack" type="button"><span>Zpět</span></button>
-        <button class="btn" id="btnNext" type="button"><span>Pokračovat</span></button>
-        <button class="btn hide" id="btnSend" type="submit"><span>Odeslat přihlášku</span></button>
+        <button class="btn ghost" id="btnBack" type="button"><span data-t="t50">Zpět</span></button>
+        <button class="btn" id="btnNext" type="button"><span data-t="t51">Pokračovat</span></button>
+        <button class="btn hide" id="btnSend" type="submit"><span data-t="t52">Odeslat přihlášku</span></button>
       </div>
     </form>
 
     <div id="doneView" class="panel hide done">
-      <h3>Přihláška odeslána</h3>
-      <p class="sub">Vedení si ji přečte. Pokud o vás projeví zájem, ozveme se na telefonní číslo, které jste uvedli.</p>
+      <h3 data-t="t53">Přihláška odeslána</h3>
+      <p class="sub" data-t="t54">Vedení si ji přečte. Pokud o vás projeví zájem, ozveme se na telefonní číslo, které jste uvedli.</p>
     </div>
   </section>
 
-  <footer>Stránka je čistě IC a patří do herního světa role-play serveru.</footer>
+  <footer data-t="t55">Stránka je čistě IC a patří do herního světa role-play serveru.</footer>
 </main>
 
-<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2.45.4/dist/umd/supabase.min.js"></script>
 <script src="app.js"></script>
 </body>
 </html>
