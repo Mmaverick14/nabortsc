@@ -3,10 +3,10 @@ var CFG={
   SUPABASE_URL:'https://cufbeahjechwpyvldztr.supabase.co',
   SUPABASE_ANON_KEY:'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImN1ZmJlYWhqZWNod3B5dmxkenRyIiwicm9sZSI6ImFub24iLCJpYXQiOjE3OTE2NjYwNjAsImV4cCI6MjEwNzI0MjA2MH0.CdFElIVzjhz6SRF__vypI8v9m3jghjtciWx62YkYCn4',
   TABLE:'nabor',
-  WEBHOOK_URL:'VLOZ_SEM_DISCORD_WEBHOOK_URL',  /* ✎ Discord → kanál → Integrace → Webhooky */
-  ADMIN_URL:'',                                 /* ✎ nepovinné: celá adresa admin.html, nadpis zprávy pak otevře přímo přihlášku */
-  PING_ROLE_ID:'',                              /* ✎ nepovinné: ID role vedení, která se při nové přihlášce označí */
-  COOLDOWN_HOURS:12
+  WEBHOOK_URL:'https://discord.com/api/webhooks/1569438434987352066/2w0-eaYk3Y3YjQfzYm5V8SukewyDdWan3R351mdz4IiFumu0XoT_bOTvamxZQbc0zIx1',  
+  ADMIN_URL:'',    
+  PING_ROLE_ID:'1311700245649948784',                              
+  COOLDOWN_HOURS:0
 };
 /* ═══════════════════ */
 var $=function(id){return document.getElementById(id)};
