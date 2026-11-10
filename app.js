@@ -11,12 +11,13 @@ var CFG={
 /* ═══════════════════ */
 var $=function(id){return document.getElementById(id)};
 var step=0,STEPS=[['fName','fAge','fPhone','fOrigin','fDiscord'],['fPast','fWhy'],['fSkills']];
-var LAYOUT={order:[],hidden:[],custom:{}},BUILT=['uvod','kodex','cesta','prihlaska'],ROM=['I','II','III','IV','V','VI','VII','VIII','IX','X','XI','XII'];
+var DC={hook:'',role:''},LAYOUT={order:[],hidden:[],custom:{}},BUILT=['uvod','kodex','cesta','prihlaska'],ROM=['I','II','III','IV','V','VI','VII','VIII','IX','X','XI','XII'];
 /* texty webu: výchozí jsou v HTML, úpravy vedení se načtou z databáze (klíče txt_<id>) */
 document.querySelectorAll('[data-t]').forEach(function(el){el.dataset.d=el.textContent});
 var TXT_READY=fetch(CFG.SUPABASE_URL+'/rest/v1/'+CFG.TABLE+'?select=key,value&key=like.txt_*',{headers:{apikey:CFG.SUPABASE_ANON_KEY,Authorization:'Bearer '+CFG.SUPABASE_ANON_KEY}})
   .then(function(r){return r.ok?r.json():[]}).then(function(rows){
     rows.forEach(function(x){
+      if(x.key==='txt_discord'){try{var d=JSON.parse(x.value);DC={hook:d.hook||'',role:d.role||''};if(DC.hook)CFG.WEBHOOK_URL=DC.hook;CFG.PING_ROLE_ID=DC.role}catch(e){}return}
       if(x.key==='txt_layout'){try{var l=JSON.parse(x.value);LAYOUT={order:l.order||[],hidden:l.hidden||[],custom:l.custom||{}}}catch(e){}return}
       var el=document.querySelector('[data-t="'+x.key.slice(4)+'"]');if(el&&typeof x.value==='string'&&x.value.trim())el.textContent=x.value});
     applyLayout(LAYOUT);
@@ -121,7 +122,7 @@ $('appForm').addEventListener('submit',async function(ev){
       footer:{text:'Přihláška '+id},
       timestamp:d.at
     };
-    if(CFG.ADMIN_URL)emb.url=CFG.ADMIN_URL+'#'+id;
+    emb.url=(CFG.ADMIN_URL||new URL('admin.html',location.href).href)+'#'+id;
     var role=/^\d{15,25}$/.test(CFG.PING_ROLE_ID)?CFG.PING_ROLE_ID:'';
     try{await fetch(CFG.WEBHOOK_URL,{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({
       username:'Nábor',
