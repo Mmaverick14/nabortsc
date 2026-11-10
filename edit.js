@@ -4,7 +4,7 @@ var sb=window.supabase.createClient(CFG.SUPABASE_URL,CFG.SUPABASE_ANON_KEY),T=CF
 var l=document.createElement('link');l.rel='stylesheet';l.href='edit.css';document.head.appendChild(l);
 var box=document.createElement('aside');box.className='epan';document.body.appendChild(box);
 document.body.classList.add('editing');
-var els=[].slice.call(document.querySelectorAll('[data-t]')),saved={},started=false,dirty=false;
+var els=[].slice.call(document.querySelectorAll('[data-t]')),saved={},started=false,dirty=false,L=clone(LAYOUT),savedL=JSON.stringify(LAYOUT);
 function esc(s){return String(s).replace(/[&<>"]/g,function(c){return{'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c]})}
 function g(el){
   if(el.closest('#doneView'))return'Po odeslání přihlášky';
@@ -14,6 +14,20 @@ function g(el){
   var s=el.closest('section');return s?({uvod:'Úvod',kodex:'Kodex',cesta:'Cesta dovnitř',prihlaska:'Přihláška'}[s.id]||s.id):'Ostatní';
 }
 function say(t,c){var m=box.querySelector('.emsg');if(m){m.textContent=t||'';m.className='emsg'+(c?' '+c:'')}}
+function clone(o){return JSON.parse(JSON.stringify(o))}
+function ttl(id){if(L.custom[id])return L.custom[id].t||'(bez názvu)';var s=document.querySelector('.rail nav [data-s="'+id+'"] span');return s?s.textContent:id}
+function secHTML(){
+  var o=layoutIds(L);
+  return'<h4>Sekce stránky</h4>'+o.map(function(id,i){
+    var c=L.custom[id],off=L.hidden.indexOf(id)>-1;
+    return'<div class="sec'+(off?' off':'')+'" data-id="'+id+'"><b>'+esc(ttl(id))+'</b><span>'+
+      '<button type="button" data-m="-1"'+(i?'':' disabled')+'>↑</button><button type="button" data-m="1"'+(i<o.length-1?'':' disabled')+'>↓</button>'+
+      (id==='prihlaska'?'':'<button type="button" data-h="1">'+(off?'Zobrazit':'Skrýt')+'</button>')+
+      (c?'<button type="button" data-x="1">Smazat</button>':'')+'</span></div>'+
+      (c?'<input class="ci" data-ct="'+id+'" value="'+esc(c.t||'')+'" placeholder="Nadpis sekce"><textarea class="cb" data-cb="'+id+'" placeholder="Text sekce. Odstavce oddělte prázdným řádkem.">'+esc(c.b||'')+'</textarea>':'');
+  }).join('')+'<button class="eb add" id="eAdd" type="button">+ Přidat sekci</button>';
+}
+function touch(){dirty=true;window.onbeforeunload=function(){return''};applyLayout(L);var e=box.querySelector('#eSec');if(e)e.innerHTML=secHTML()}
 function size(t){t.style.height='auto';t.style.height=t.scrollHeight+'px'}
 
 function loginUI(){
@@ -36,11 +50,11 @@ function editUI(){
   els.forEach(function(el){var n=g(el);if(!groups[n]){groups[n]=[];order.push(n)}groups[n].push(el)});
   box.innerHTML='<div class="eh"><h3>Úprava textů</h3><p>Klikněte na text na stránce nebo ho najděte v seznamu. Změny se hned ukazují, uloží se tlačítkem.</p>'+
     '<div class="eb2"><button class="eb primary" id="eSave" type="button">Uložit změny</button><button class="eb" id="eDisc" type="button">Zahodit</button></div>'+
-    '<div class="eb2"><button class="eb" id="eReset" type="button">Obnovit původní texty</button><button class="eb" id="eExit" type="button">Konec úprav</button></div><p class="emsg"></p></div>'+
-    '<div class="elist">'+order.map(function(n){return'<h4>'+esc(n)+'</h4>'+groups[n].map(function(el){return'<textarea data-k="'+el.dataset.t+'" rows="1">'+esc(el.textContent)+'</textarea>'}).join('')}).join('')+'</div>';
+    '<div class="eb2"><button class="eb" id="eReset" type="button">Obnovit původní texty</button><button class="eb" id="eExit" type="button">Konec úprav</button></div><div class="eb2"><a class="eb" href="admin.html">Hodnocení přihlášek</a></div><p class="emsg"></p></div>'+
+    '<div class="elist"><div id="eSec">'+secHTML()+'</div>'+order.map(function(n){return'<h4>'+esc(n)+'</h4>'+groups[n].map(function(el){return'<textarea data-k="'+el.dataset.t+'" rows="1">'+esc(el.textContent)+'</textarea>'}).join('')}).join('')+'</div>';
   box.querySelectorAll('textarea').forEach(size);
   box.querySelector('#eSave').onclick=save;
-  box.querySelector('#eDisc').onclick=function(){els.forEach(function(el){el.textContent=saved[el.dataset.t]});editUI()};
+  box.querySelector('#eDisc').onclick=function(){els.forEach(function(el){el.textContent=saved[el.dataset.t]});L=clone(JSON.parse(savedL));applyLayout(L);editUI()};
   box.querySelector('#eExit').onclick=function(){if(!dirty||confirm('Neuložené změny se ztratí. Opravdu skončit?'))go()};
   box.querySelector('#eReset').onclick=async function(){
     if(!confirm('Vrátit všechny texty na původní znění? Všechny dosavadní úpravy se smažou.'))return;
@@ -68,6 +82,20 @@ document.addEventListener('click',function(e){
   var ta=box.querySelector('[data-k="'+t.dataset.t+'"]');if(ta){ta.focus();ta.scrollIntoView({block:'center'})}
 },true);
 
+box.addEventListener('input',function(e){
+  var d=e.target.dataset||{},id=d.ct||d.cb;
+  if(id&&L.custom[id]){L.custom[id][d.ct?'t':'b']=e.target.value;dirty=true;window.onbeforeunload=function(){return''};applyLayout(L)}
+});
+box.addEventListener('click',function(e){
+  var b=e.target.closest('[data-m],[data-h],[data-x],#eAdd');if(!b)return;
+  var r=b.closest('[data-id]'),id=r&&r.dataset.id,o=layoutIds(L);
+  if(b.id==='eAdd'){var n='c'+Date.now().toString(36);L.custom[n]={t:'Nová sekce',b:''};o.push(n);L.order=o}
+  else if(b.dataset.m){var i=o.indexOf(id),j=i+(+b.dataset.m);if(j<0||j>=o.length)return;o.splice(j,0,o.splice(i,1)[0]);L.order=o}
+  else if(b.dataset.h){var h=L.hidden.indexOf(id);if(h>-1)L.hidden.splice(h,1);else L.hidden.push(id)}
+  else if(b.dataset.x){if(!confirm('Smazat tuto sekci?'))return;delete L.custom[id];L.order=o.filter(function(x){return x!==id});L.hidden=L.hidden.filter(function(x){return x!==id})}
+  touch();
+});
+
 async function save(){
   var up=[],del=[],now=new Date().toISOString();
   els.forEach(function(el){
@@ -75,13 +103,15 @@ async function save(){
     if(!cur||cur===el.dataset.d){if(saved[k]!==el.dataset.d)del.push('txt_'+k);if(!cur)el.textContent=el.dataset.d}
     else if(cur!==saved[k])up.push({key:'txt_'+k,value:cur,updated_at:now});
   });
-  if(!up.length&&!del.length){say('Není co ukládat.');return}
+  var lc=JSON.stringify(L)!==savedL;
+  if(!up.length&&!del.length&&!lc){say('Není co ukládat.');return}
+  if(lc)up.push({key:'txt_layout',value:JSON.stringify(L),updated_at:now});
   say('Ukládám…');
   var r1=up.length?await sb.from(T).upsert(up,{onConflict:'key'}):{};
   var r2=del.length?await sb.from(T).delete().in('key',del):{};
   var err=(r1.error||r2.error);
   if(err){say('Uložení se nepodařilo: '+err.message,'err');return}
-  els.forEach(function(el){saved[el.dataset.t]=el.textContent});dirty=false;window.onbeforeunload=null;
+  els.forEach(function(el){saved[el.dataset.t]=el.textContent});dirty=false;savedL=JSON.stringify(L);window.onbeforeunload=null;
   say('Uloženo. Změny jsou na webu vidět hned.','ok');
 }
 

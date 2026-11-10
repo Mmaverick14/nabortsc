@@ -23,3 +23,14 @@ body.editing [data-t].hl{outline:2px dashed var(--acc);outline-offset:3px}
   body.editing{padding-right:0;padding-bottom:55vh}
   .epan{top:auto;width:auto;left:0;height:55vh;border-left:0;border-top:1px solid var(--acc-dim)}
 }
+
+.sec{display:flex;align-items:center;justify-content:space-between;gap:.5rem;padding:.45rem 0;border-bottom:1px solid var(--border);font-size:.9rem;color:var(--textb)}
+.sec.off b{opacity:.45;text-decoration:line-through}
+.sec span{display:flex;gap:.3rem;flex-shrink:0}
+.sec button{background:transparent;border:1px solid var(--brite);color:var(--text);font:500 .75rem var(--sans);padding:.25rem .5rem;cursor:pointer}
+.sec button:hover:not(:disabled){border-color:var(--acc);color:var(--acc)}
+.sec button:disabled{opacity:.3;cursor:default}
+.elist input.ci{display:block;width:100%;background:var(--surf);border:1px solid var(--border);color:var(--textb);font:600 1rem var(--sans);padding:.5rem .6rem;margin:.5rem 0 .4rem;outline:0}
+.elist input.ci:focus{border-color:var(--acc)}
+.elist textarea.cb{min-height:7rem;resize:vertical;overflow:auto}
+.eb.add{display:block;width:100%;margin-top:.8rem}

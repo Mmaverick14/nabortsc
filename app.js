@@ -11,11 +11,15 @@ var CFG={
 /* ═══════════════════ */
 var $=function(id){return document.getElementById(id)};
 var step=0,STEPS=[['fName','fAge','fPhone','fOrigin','fDiscord'],['fPast','fWhy'],['fSkills']];
+var LAYOUT={order:[],hidden:[],custom:{}},BUILT=['uvod','kodex','cesta','prihlaska'],ROM=['I','II','III','IV','V','VI','VII','VIII','IX','X','XI','XII'];
 /* texty webu: výchozí jsou v HTML, úpravy vedení se načtou z databáze (klíče txt_<id>) */
 document.querySelectorAll('[data-t]').forEach(function(el){el.dataset.d=el.textContent});
 var TXT_READY=fetch(CFG.SUPABASE_URL+'/rest/v1/'+CFG.TABLE+'?select=key,value&key=like.txt_*',{headers:{apikey:CFG.SUPABASE_ANON_KEY,Authorization:'Bearer '+CFG.SUPABASE_ANON_KEY}})
   .then(function(r){return r.ok?r.json():[]}).then(function(rows){
-    rows.forEach(function(x){var el=document.querySelector('[data-t="'+x.key.slice(4)+'"]');if(el&&typeof x.value==='string'&&x.value.trim())el.textContent=x.value});
+    rows.forEach(function(x){
+      if(x.key==='txt_layout'){try{var l=JSON.parse(x.value);LAYOUT={order:l.order||[],hidden:l.hidden||[],custom:l.custom||{}}}catch(e){}return}
+      var el=document.querySelector('[data-t="'+x.key.slice(4)+'"]');if(el&&typeof x.value==='string'&&x.value.trim())el.textContent=x.value});
+    applyLayout(LAYOUT);
   }).catch(function(){});
 /* ?upravit = režim úprav textů pro vedení */
 if(/[?&]upravit/.test(location.search)){
@@ -30,8 +34,34 @@ function cut(s,n){s=(s||'').trim();return s?(s.length>n?s.slice(0,n-1)+'…':s):
 
 /* menu: zvýraznění kapitoly */
 var links=document.querySelectorAll('.rail nav a');
-var io=new IntersectionObserver(function(es){es.forEach(function(e){if(e.isIntersecting)links.forEach(function(a){a.classList.toggle('on',a.dataset.s===e.target.id)})})},{rootMargin:'-40% 0px -55% 0px'});
+var io=new IntersectionObserver(function(es){es.forEach(function(e){if(e.isIntersecting)document.querySelectorAll('.rail nav a').forEach(function(a){a.classList.toggle('on',a.dataset.s===e.target.id)})})},{rootMargin:'-40% 0px -55% 0px'});
 document.querySelectorAll('.ch').forEach(function(s){io.observe(s)});
+
+/* rozvržení: pořadí, skrytí a vlastní sekce (uloženo jako řádek txt_layout) */
+function layoutIds(L){
+  var ids=(L.order||[]).filter(function(i){return BUILT.indexOf(i)>-1||L.custom[i]});
+  BUILT.concat(Object.keys(L.custom)).forEach(function(i){if(ids.indexOf(i)<0)ids.push(i)});
+  return ids;
+}
+function applyLayout(L){
+  var main=document.querySelector('main'),foot=main.querySelector('footer'),nav=document.querySelector('.rail nav'),n=0;
+  document.querySelectorAll('.custom').forEach(function(x){x.remove()});
+  layoutIds(L).forEach(function(id){
+    var s=document.getElementById(id),a=nav.querySelector('[data-s="'+id+'"]'),c=L.custom[id];
+    if(c){
+      s=document.createElement('section');s.id=id;s.className='ch custom';
+      var h=document.createElement('h2');h.textContent=c.t||'';s.appendChild(h);
+      String(c.b||'').split(/\n\s*\n/).forEach(function(t){if(t.trim()){var p=document.createElement('p');p.style.whiteSpace='pre-line';p.textContent=t.trim();s.appendChild(p)}});
+      a=document.createElement('a');a.href='#'+id;a.dataset.s=id;a.className='custom';a.innerHTML='<i></i><span></span>';a.lastChild.textContent=c.t||'';
+    }
+    if(!s||!a)return;
+    var hid=(L.hidden||[]).indexOf(id)>-1&&id!=='prihlaska';
+    s.classList.toggle('hide',hid);a.classList.toggle('hide',hid);
+    main.insertBefore(s,foot);nav.appendChild(a);
+    if(!hid)a.querySelector('i').textContent=ROM[n++]||n;
+    io.observe(s);
+  });
+}
 
 /* kroky */
 function showStep(n){

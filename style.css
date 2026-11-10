@@ -95,3 +95,11 @@ footer{padding:2.5rem 0;text-align:center;font-size:.85rem;color:var(--muted)}
 @media(prefers-reduced-motion:reduce){html{scroll-behavior:auto}.btn::before{transition:none}}
 
 [data-t]{white-space:pre-line}
+
+/* vedení + vlastní sekce */
+.staff{margin-top:auto;padding:1rem 1.6rem 0;border-top:1px solid var(--border);color:var(--muted);font-size:.85rem;text-decoration:none}
+.staff:hover,.fl a:hover{color:var(--acc)}
+.fl{display:none;text-align:center;padding-bottom:2rem;font-size:.85rem}
+.fl a{color:var(--muted);text-decoration:none}
+.custom p{margin-bottom:1.2rem}
+@media(max-width:860px){.staff{display:none}.fl{display:block}}
