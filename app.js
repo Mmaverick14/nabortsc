@@ -64,6 +64,15 @@ function applyLayout(L){
   });
 }
 
+/* čistá adresa: odkazy na kapitoly jen posunou stránku, #hash se v adrese neukazuje */
+document.addEventListener('click',function(e){
+  var a=e.target.closest('a[href^="#"]');if(!a)return;
+  var t=document.getElementById(a.getAttribute('href').slice(1));if(!t)return;
+  e.preventDefault();t.scrollIntoView();
+  if(location.hash)history.replaceState(null,'',location.pathname+location.search);
+});
+if(location.hash&&!/admin/.test(location.pathname))history.replaceState(null,'',location.pathname+location.search);
+
 /* kroky */
 function showStep(n){
   step=n;
