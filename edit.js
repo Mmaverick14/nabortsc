@@ -1,7 +1,9 @@
 /* Režim úprav textů: index.html?upravit (jen pro přihlášené vedení) */
 (function(){
 var sb=window.supabase.createClient(CFG.SUPABASE_URL,CFG.SUPABASE_ANON_KEY),T=CFG.TABLE;
-var l=document.createElement('link');l.rel='stylesheet';l.href='edit.css';document.head.appendChild(l);
+var l=document.createElement('link');l.rel='stylesheet';l.href='edit.css';l.onload=function(){resizeAll()};document.head.appendChild(l);
+if(document.fonts&&document.fonts.ready)document.fonts.ready.then(function(){resizeAll()});
+window.addEventListener('resize',function(){resizeAll()});
 var box=document.createElement('aside');box.className='epan';document.body.appendChild(box);
 document.body.classList.add('editing');
 var els=[].slice.call(document.querySelectorAll('[data-t]')),saved={},started=false,dirty=false,L=clone(LAYOUT),savedL=JSON.stringify(LAYOUT),FF=clone(FORM),savedF=JSON.stringify(FORM);
@@ -41,7 +43,8 @@ function dcBad(d){
   return'';
 }
 function touch(){dirty=true;window.onbeforeunload=function(){return''};applyLayout(L);var e=box.querySelector('#eSec');if(e)e.innerHTML=secHTML()}
-function size(t){t.style.height='auto';t.style.height=t.scrollHeight+'px'}
+function size(t){t.style.height='auto';t.style.height=(t.scrollHeight+2)+'px'}
+function resizeAll(){box.querySelectorAll('.elist textarea:not(.cb)').forEach(size)}
 
 var TY=[['text','Krátký text'],['textarea','Dlouhý text'],['number','Číslo'],['select','Výběr z možností']];
 function core(f){return f.id==='name'||f.id==='discord'}
