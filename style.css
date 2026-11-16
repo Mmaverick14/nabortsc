@@ -103,3 +103,5 @@ footer{padding:2.5rem 0;text-align:center;font-size:.85rem;color:var(--muted)}
 .fl a{color:var(--muted);text-decoration:none}
 .custom p{margin-bottom:1.2rem}
 @media(max-width:860px){.staff{display:none}.fl{display:block}}
+
+.f select{width:100%;background:var(--card);border:0;border-bottom:1px solid var(--brite);color:var(--textb);font:400 1.05rem var(--sans);padding:.6rem .1rem;outline:0}

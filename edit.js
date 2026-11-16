@@ -4,7 +4,7 @@ var sb=window.supabase.createClient(CFG.SUPABASE_URL,CFG.SUPABASE_ANON_KEY),T=CF
 var l=document.createElement('link');l.rel='stylesheet';l.href='edit.css';document.head.appendChild(l);
 var box=document.createElement('aside');box.className='epan';document.body.appendChild(box);
 document.body.classList.add('editing');
-var els=[].slice.call(document.querySelectorAll('[data-t]')),saved={},started=false,dirty=false,L=clone(LAYOUT),savedL=JSON.stringify(LAYOUT);
+var els=[].slice.call(document.querySelectorAll('[data-t]')),saved={},started=false,dirty=false,L=clone(LAYOUT),savedL=JSON.stringify(LAYOUT),FF=clone(FORM),savedF=JSON.stringify(FORM);
 function esc(s){return String(s).replace(/[&<>"]/g,function(c){return{'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c]})}
 function g(el){
   if(el.closest('#doneView'))return'Po odeslání přihlášky';
@@ -43,6 +43,47 @@ function dcBad(d){
 function touch(){dirty=true;window.onbeforeunload=function(){return''};applyLayout(L);var e=box.querySelector('#eSec');if(e)e.innerHTML=secHTML()}
 function size(t){t.style.height='auto';t.style.height=t.scrollHeight+'px'}
 
+var TY=[['text','Krátký text'],['textarea','Dlouhý text'],['number','Číslo'],['select','Výběr z možností']];
+function core(f){return f.id==='name'||f.id==='discord'}
+function at(i,j,p){return' data-si="'+i+'" data-fi="'+j+'" data-p="'+p+'"'}
+function bt(a,i,j,ok){return'<button type="button" data-fa="'+a+'" data-si="'+i+'" data-fi="'+j+'"'+(ok?'':' disabled')+'>'+({sup:'↑',sdn:'↓',fup:'↑',fdn:'↓'}[a]||'Smazat')+'</button>'}
+function formHTML(){
+  return'<h4>Formulář přihlášky</h4>'+FF.steps.map(function(s,i){
+    return'<div class="fs"><div class="sec"><input class="ci" data-si="'+i+'" data-p="t" value="'+esc(s.t)+'" placeholder="Název kroku"><span>'+bt('sup',i,0,i>0)+bt('sdn',i,0,i<FF.steps.length-1)+bt('sdel',i,0,FF.steps.length>1&&!s.f.some(core))+'</span></div>'+
+    s.f.map(function(f,j){
+      var n=f.type==='number',tx=f.type==='text'||f.type==='textarea';
+      return'<div class="fld"><input class="ci"'+at(i,j,'l')+' value="'+esc(f.l)+'" placeholder="Otázka"><input class="ci"'+at(i,j,'h')+' value="'+esc(f.h||'')+'" placeholder="Nápověda (nepovinné)">'+
+      '<div class="fo"><select'+at(i,j,'type')+'>'+TY.map(function(t){return'<option value="'+t[0]+'"'+(f.type===t[0]?' selected':'')+'>'+t[1]+'</option>'}).join('')+'</select>'+
+      '<label><input type="checkbox"'+at(i,j,'req')+(f.req?' checked':'')+'> povinné</label><label><input type="checkbox"'+at(i,j,'half')+(f.half?' checked':'')+'> půl šířky</label>'+
+      (tx?'<input type="number"'+at(i,j,'max')+' value="'+(f.max==null?'':f.max)+'" placeholder="max znaků">':'')+
+      (n?'<input type="number"'+at(i,j,'min')+' value="'+(f.min==null?'':f.min)+'" placeholder="min"><input type="number"'+at(i,j,'max')+' value="'+(f.max==null?'':f.max)+'" placeholder="max">':'')+
+      (f.type==='select'?'<input class="wide"'+at(i,j,'opts')+' value="'+esc(f.opts||'')+'" placeholder="Možnosti oddělte čárkou">':'')+
+      '</div><span class="fb">'+bt('fup',i,j,j>0)+bt('fdn',i,j,j<s.f.length-1)+(core(f)?'':bt('fdel',i,j,1))+'</span></div>';
+    }).join('')+'<button class="eb add" type="button" data-fa="fadd" data-si="'+i+'">+ Přidat otázku</button></div>';
+  }).join('')+'<button class="eb add" type="button" data-fa="sadd">+ Přidat krok</button>';
+}
+function frm(){FORM=FF;buildForm();dirty=true;window.onbeforeunload=function(){return''}}
+function onF(e){
+  var t=e.target,d=t.dataset;if(d.p==null||d.si==null)return;
+  var s=FF.steps[d.si],o=d.fi==null?s:s.f[d.fi],v=t.type==='checkbox'?(t.checked?1:0):t.value;
+  if(d.p==='max'||d.p==='min')v=v===''?null:+v;
+  if(o[d.p]===v)return;o[d.p]=v;frm();
+  if(d.p==='type')box.querySelector('#eForm').innerHTML=formHTML();
+}
+box.addEventListener('input',onF);box.addEventListener('change',onF);
+box.addEventListener('click',function(e){
+  var b=e.target.closest('[data-fa]');if(!b)return;
+  var a=b.dataset.fa,i=+b.dataset.si,j=+b.dataset.fi,st=FF.steps;
+  function mv(r,x,d){var y=x+d;if(y>=0&&y<r.length)r.splice(y,0,r.splice(x,1)[0])}
+  function nf(){return{id:'q'+Date.now().toString(36)+Math.floor(Math.random()*99),l:'Nová otázka',type:'text',req:0,max:300}}
+  if(a==='sup')mv(st,i,-1);else if(a==='sdn')mv(st,i,1);
+  else if(a==='sdel'){if(!confirm('Smazat celý krok i s otázkami?'))return;st.splice(i,1)}
+  else if(a==='fup')mv(st[i].f,j,-1);else if(a==='fdn')mv(st[i].f,j,1);
+  else if(a==='fdel'){if(!confirm('Smazat tuto otázku?'))return;st[i].f.splice(j,1)}
+  else if(a==='fadd')st[i].f.push(nf());
+  else if(a==='sadd')st.push({t:'Nový krok',f:[nf()]});
+  frm();box.querySelector('#eForm').innerHTML=formHTML();
+});
 function loginUI(){
   started=false;
   box.innerHTML='<div class="eh"><h3>Úprava textů</h3><p>Přihlaste se jako člen vedení.</p>'+
@@ -64,10 +105,10 @@ function editUI(){
   box.innerHTML='<div class="eh"><h3>Úprava textů</h3><p>Klikněte na text na stránce nebo ho najděte v seznamu. Změny se hned ukazují, uloží se tlačítkem.</p>'+
     '<div class="eb2"><button class="eb primary" id="eSave" type="button">Uložit změny</button><button class="eb" id="eDisc" type="button">Zahodit</button></div>'+
     '<div class="eb2"><button class="eb" id="eReset" type="button">Obnovit původní texty</button><button class="eb" id="eExit" type="button">Konec úprav</button></div><div class="eb2"><a class="eb" href="admin.html">Hodnocení přihlášek</a><button class="eb" id="eFull" type="button">Na celou obrazovku</button></div><p class="emsg"></p></div>'+
-    '<div class="elist"><div id="eSec">'+secHTML()+'</div><div id="eDc">'+dcHTML()+'</div>'+order.map(function(n){return'<h4>'+esc(n)+'</h4>'+groups[n].map(function(el){return'<textarea data-k="'+el.dataset.t+'" rows="1">'+esc(el.textContent)+'</textarea>'}).join('')}).join('')+'</div>';
+    '<div class="elist"><div id="eSec">'+secHTML()+'</div><div id="eForm">'+formHTML()+'</div><div id="eDc">'+dcHTML()+'</div>'+order.map(function(n){return'<h4>'+esc(n)+'</h4>'+groups[n].map(function(el){return'<textarea data-k="'+el.dataset.t+'" rows="1">'+esc(el.textContent)+'</textarea>'}).join('')}).join('')+'</div>';
   box.querySelectorAll('textarea').forEach(size);
   box.querySelector('#eSave').onclick=save;
-  box.querySelector('#eDisc').onclick=function(){els.forEach(function(el){el.textContent=saved[el.dataset.t]});L=clone(JSON.parse(savedL));applyLayout(L);editUI()};
+  box.querySelector('#eDisc').onclick=function(){els.forEach(function(el){el.textContent=saved[el.dataset.t]});L=clone(JSON.parse(savedL));applyLayout(L);FF=clone(JSON.parse(savedF));FORM=FF;buildForm();editUI()};
   box.querySelector('#eExit').onclick=function(){if(!dirty||confirm('Neuložené změny se ztratí. Opravdu skončit?'))go()};
   box.querySelector('#eReset').onclick=async function(){
     if(!confirm('Vrátit všechny texty na původní znění? Všechny dosavadní úpravy se smažou.'))return;
@@ -141,19 +182,21 @@ async function save(){
     if(!cur||cur===el.dataset.d){if(saved[k]!==el.dataset.d)del.push('txt_'+k);if(!cur)el.textContent=el.dataset.d}
     else if(cur!==saved[k])up.push({key:'txt_'+k,value:cur,updated_at:now});
   });
-  var lc=JSON.stringify(L)!==savedL;
-  if(!up.length&&!del.length&&!lc){say('Není co ukládat.');return}
+  var lc=JSON.stringify(L)!==savedL,fc=JSON.stringify(FF)!==savedF;
+  if(!up.length&&!del.length&&!lc&&!fc){say('Není co ukládat.');return}
+  if(fc)up.push({key:'txt_form',value:JSON.stringify(FF),updated_at:now});
   if(lc)up.push({key:'txt_layout',value:JSON.stringify(L),updated_at:now});
   say('Ukládám…');
   var r1=up.length?await sb.from(T).upsert(up,{onConflict:'key'}):{};
   var r2=del.length?await sb.from(T).delete().in('key',del):{};
   var err=(r1.error||r2.error);
   if(err){say('Uložení se nepodařilo: '+err.message,'err');return}
-  els.forEach(function(el){saved[el.dataset.t]=el.textContent});dirty=false;savedL=JSON.stringify(L);window.onbeforeunload=null;
+  els.forEach(function(el){saved[el.dataset.t]=el.textContent});dirty=false;savedL=JSON.stringify(L);savedF=JSON.stringify(FF);window.onbeforeunload=null;
   say('Uloženo. Změny jsou na webu vidět hned.','ok');
 }
 
 TXT_READY.then(function(){
+  FF=clone(FORM);savedF=JSON.stringify(FORM);L=clone(LAYOUT);savedL=JSON.stringify(LAYOUT);
   sb.auth.onAuthStateChange(function(_e,s){
     if(s&&!started)editUI();
     else if(!s)loginUI();

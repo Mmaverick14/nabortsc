@@ -9,7 +9,12 @@ var CFG={
 };
 /* ═══════════════════ */
 var $=function(id){return document.getElementById(id)};
-var step=0,STEPS=[['fName','fAge','fPhone','fOrigin','fDiscord'],['fPast','fWhy'],['fSkills']];
+var step=0,FORM;
+var DEF_FORM={steps:[
+{t:'Kdo jste',f:[{id:'name',l:'Jméno a příjmení',type:'text',req:1,max:60,half:1},{id:'age',l:'Věk',type:'number',req:1,min:18,max:90,half:1},{id:'phone',l:'Telefonní číslo',type:'text',req:1,max:20,half:1},{id:'origin',l:'Odkud pocházíte',type:'text',req:1,max:80,half:1},{id:'discord',l:'Kontakt na Discordu',h:'Napíšeme vám tam, pokud o vás projevíme zájem.',type:'text',req:1,max:40}]},
+{t:'Vaše cesta',f:[{id:'past',l:'Vaše minulost',h:'Kdo jste, čím jste se živil(a), co vás přivedlo do města.',type:'textarea',req:1,max:900},{id:'why',l:'Proč právě my',h:'Co hledáte a co od nás čekáte.',type:'textarea',req:1,max:700}]},
+{t:'Co nabídnete',f:[{id:'skills',l:'Co umíte a co nabídnete',h:'Dovednosti, kontakty, vybavení, zkušenosti.',type:'textarea',req:1,max:700},{id:'ref',l:'Kdo vás doporučil',type:'text',max:80},{id:'prev',l:'Dřívější skupina',h:'Pokud jste v nějaké byl(a), v jaké a proč jste odešel(a).',type:'textarea',max:500}]}]};
+FORM=DEF_FORM;
 var DC={hook:'',role:''},LAYOUT={order:[],hidden:[],custom:{}},BUILT=['uvod','kodex','cesta','prihlaska'],ROM=['I','II','III','IV','V','VI','VII','VIII','IX','X','XI','XII'];
 /* texty webu: výchozí jsou v HTML, úpravy vedení se načtou z databáze (klíče txt_<id>) */
 document.querySelectorAll('[data-t]').forEach(function(el){el.dataset.d=el.textContent});
@@ -17,9 +22,10 @@ var TXT_READY=fetch(CFG.SUPABASE_URL+'/rest/v1/'+CFG.TABLE+'?select=key,value&ke
   .then(function(r){return r.ok?r.json():[]}).then(function(rows){
     rows.forEach(function(x){
       if(x.key==='txt_discord'){try{var d=JSON.parse(x.value);DC={hook:d.hook||'',role:d.role||''};if(DC.hook)CFG.WEBHOOK_URL=DC.hook;CFG.PING_ROLE_ID=DC.role}catch(e){}return}
+      if(x.key==='txt_form'){try{var fm=JSON.parse(x.value);if(fm&&fm.steps&&fm.steps.length)FORM=fm}catch(e){}return}
       if(x.key==='txt_layout'){try{var l=JSON.parse(x.value);LAYOUT={order:l.order||[],hidden:l.hidden||[],custom:l.custom||{}}}catch(e){}return}
       var el=document.querySelector('[data-t="'+x.key.slice(4)+'"]');if(el&&typeof x.value==='string'&&x.value.trim())el.textContent=x.value});
-    applyLayout(LAYOUT);
+    buildForm();applyLayout(LAYOUT);
   }).catch(function(){});
 /* ?upravit = režim úprav textů pro vedení */
 if(/[?&]upravit/.test(location.search)){
@@ -72,42 +78,63 @@ document.addEventListener('click',function(e){
 });
 if(location.hash&&!/admin/.test(location.pathname))history.replaceState(null,'',location.pathname+location.search);
 
+function esc(s){return String(s==null?'':s).replace(/[&<>"']/g,function(c){return{'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]})}
+/* formulář se skládá z definice FORM (upravuje se v režimu ?upravit) */
+function buildForm(){
+  var P=$('prog'),S=$('steps');P.innerHTML='';S.innerHTML='';
+  FORM.steps.forEach(function(s,i){
+    var li=document.createElement('li');li.textContent=s.t;P.appendChild(li);
+    var fs=document.createElement('fieldset'),h='',pair=0;fs.className='step';fs.dataset.i=i;
+    s.f.forEach(function(f,j){
+      var id='f_'+f.id,nx=s.f[j+1],c;
+      if(f.type==='textarea')c='<textarea id="'+id+'"'+(f.max?' maxlength="'+f.max+'"':'')+'></textarea>';
+      else if(f.type==='select')c='<select id="'+id+'"><option value=""></option>'+String(f.opts||'').split(',').filter(function(o){return o.trim()}).map(function(o){return'<option>'+esc(o.trim())+'</option>'}).join('')+'</select>';
+      else if(f.type==='number')c='<input id="'+id+'" type="number"'+(f.min!=null?' min="'+f.min+'"':'')+(f.max!=null?' max="'+f.max+'"':'')+'>';
+      else c='<input id="'+id+'"'+(f.max?' maxlength="'+f.max+'"':'')+'>';
+      var b='<div class="f"><label for="'+id+'">'+esc(f.l)+(f.req?'':' <em>(nepovinné)</em>')+'</label>'+(f.h?'<small>'+esc(f.h)+'</small>':'')+c+'</div>';
+      if(pair){h+=b+'</div>';pair=0}else if(f.half&&nx&&nx.half){h+='<div class="row2">'+b;pair=1}else h+=b;
+    });
+    fs.innerHTML=h;S.appendChild(fs);
+  });
+  showStep(0);
+}
 /* kroky */
 function showStep(n){
   step=n;
   document.querySelectorAll('.step').forEach(function(s){s.classList.toggle('on',+s.dataset.i===n)});
   document.querySelectorAll('#prog li').forEach(function(li,i){li.classList.toggle('on',i===n);li.classList.toggle('done',i<n)});
   $('btnBack').style.visibility=n===0?'hidden':'visible';
-  $('btnNext').classList.toggle('hide',n===2);
-  $('btnSend').classList.toggle('hide',n!==2);
+  $('btnNext').classList.toggle('hide',n===FORM.steps.length-1);
+  $('btnSend').classList.toggle('hide',n!==FORM.steps.length-1);
   say('formMsg','');
 }
 function valid(n){
-  var first=null;
-  STEPS[n].forEach(function(id){
-    var el=$(id),bad=!el.value.trim();
-    if(id==='fAge'){var a=parseInt(el.value,10);bad=!(a>=18&&a<=90)}
+  var first=null,m='Vyplňte všechna povinná pole.';
+  FORM.steps[n].f.forEach(function(f){
+    var el=$('f_'+f.id),v=el.value.trim(),bad=!!f.req&&!v;
+    if(f.type==='number'&&v){var a=parseFloat(v);if(isNaN(a)||(f.min!=null&&a<f.min)||(f.max!=null&&a>f.max)){bad=true;if(!first)m='Pole „'+f.l+'“: povolená hodnota je '+(f.min!=null?f.min:'…')+' až '+(f.max!=null?f.max:'…')+'.'}}
     el.classList.toggle('bad',bad);if(bad&&!first)first=el;
   });
-  if(first){first.focus();say('formMsg',first.id==='fAge'&&first.value?'Věk postavy musí být mezi 18 a 90.':'Vyplňte všechna povinná pole.','err')}
+  if(first){first.focus();say('formMsg',m,'err')}
   return !first;
 }
 $('btnNext').addEventListener('click',function(){if(valid(step))showStep(step+1)});
 $('btnBack').addEventListener('click',function(){showStep(step-1)});
-document.querySelectorAll('.f input,.f textarea').forEach(function(el){el.addEventListener('input',function(){el.classList.remove('bad')})});
-showStep(0);
+$('appForm').addEventListener('input',function(e){e.target.classList.remove('bad')});
+buildForm();
 
 /* odeslání: uložení do Supabase (bez přihlášení) + upozornění na Discord */
 $('appForm').addEventListener('submit',async function(ev){
   ev.preventDefault();
   if($('hp').value)return;
-  for(var i=0;i<3;i++){if(!valid(i)){showStep(i);return}}
+  for(var i=0;i<FORM.steps.length;i++){if(!valid(i)){showStep(i);return}}
   var last=0;try{last=parseInt(localStorage.getItem('nabor_last')||'0',10)}catch(e){}
   if(Date.now()-last<CFG.COOLDOWN_HOURS*3600*1000){say('formMsg','Přihláška už byla z tohoto zařízení odeslána. Počkejte na odpověď.','err');return}
 
   var id=Date.now().toString(36)+Math.random().toString(36).slice(2,6);
-  var d={name:val('fName'),age:parseInt(val('fAge'),10),phone:val('fPhone'),origin:val('fOrigin'),discord:val('fDiscord'),
-    past:val('fPast'),why:val('fWhy'),skills:val('fSkills'),ref:val('fRef'),prev:val('fPrev'),at:new Date().toISOString()};
+  var d={at:new Date().toISOString(),fields:[]};
+  FORM.steps.forEach(function(s){s.f.forEach(function(f){var v=val('f_'+f.id);d.fields.push({id:f.id,l:f.l,v:v});d[f.id]=v})});
+  if(d.age)d.age=parseInt(d.age,10)||d.age;
   var btn=$('btnSend');btn.disabled=true;say('formMsg','Odesílám…');
   var okDb=false;
   try{
@@ -121,12 +148,9 @@ $('appForm').addEventListener('submit',async function(ev){
     var F=function(n,v,i){return v?{name:n,value:cut(v,1000),inline:!!i}:null};
     var emb={
       title:'Nová přihláška: '+cut(d.name,60),
-      description:'**'+cut(d.name,60)+'**, '+d.age+' let, '+cut(d.origin,80),
+      description:'**'+cut(d.name,60)+'**'+(d.age?', '+d.age+' let':'')+(d.origin?', '+cut(d.origin,80):''),
       color:0xC49A14,
-      fields:[
-        F('💬 Discord',d.discord,true),F('📞 Telefon',d.phone,true),F('🤝 Doporučil',d.ref,true),
-        F('Minulost',d.past),F('Proč právě my',d.why),F('Co umí a nabídne',d.skills),F('Dřívější skupina',d.prev)
-      ].filter(Boolean),
+      fields:d.fields.filter(function(f){return f.v&&f.id!=='name'}).slice(0,24).map(function(f){return{name:cut(f.l,250),value:cut(f.v,1000),inline:f.v.length<30}}),
       footer:{text:'Přihláška '+id},
       timestamp:d.at
     };

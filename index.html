@@ -58,32 +58,9 @@
     <form id="appForm" class="panel" novalidate>
       <input class="hp" type="text" id="hp" tabindex="-1" autocomplete="off" aria-hidden="true">
       <p class="sub" data-t="t29">Odpovídejte jako vaše postava. Ozveme se vám na Discordu.</p>
-      <ol class="prog" id="prog">
-        <li class="on" data-t="t30">Kdo jste</li><li data-t="t31">Vaše cesta</li><li data-t="t32">Co nabídnete</li>
-      </ol>
+      <ol class="prog" id="prog"></ol>
+      <div id="steps"></div>
 
-      <fieldset class="step on" data-i="0">
-        <div class="row2">
-          <div class="f"><label for="fName" data-t="t33">Jméno a příjmení</label><input id="fName" maxlength="60"></div>
-          <div class="f"><label for="fAge" data-t="t34">Věk</label><input id="fAge" type="number" min="18" max="90"></div>
-        </div>
-        <div class="row2">
-          <div class="f"><label for="fPhone" data-t="t35">Telefonní číslo</label><input id="fPhone" maxlength="20" inputmode="tel"></div>
-          <div class="f"><label for="fOrigin" data-t="t36">Odkud pocházíte</label><input id="fOrigin" maxlength="80"></div>
-        </div>
-        <div class="f"><label for="fDiscord" data-t="t37">Kontakt na Discordu</label><small data-t="t38">Napíšeme vám tam, pokud o vás projevíme zájem.</small><input id="fDiscord" maxlength="40" autocomplete="off"></div>
-      </fieldset>
-
-      <fieldset class="step" data-i="1">
-        <div class="f"><label for="fPast" data-t="t39">Vaše minulost</label><small data-t="t40">Kdo jste, čím jste se živil(a), co vás přivedlo do města.</small><textarea id="fPast" maxlength="900"></textarea></div>
-        <div class="f"><label for="fWhy" data-t="t41">Proč právě my</label><small data-t="t42">Co hledáte a co od nás čekáte.</small><textarea id="fWhy" maxlength="700"></textarea></div>
-      </fieldset>
-
-      <fieldset class="step" data-i="2">
-        <div class="f"><label for="fSkills" data-t="t43">Co umíte a co nabídnete</label><small data-t="t44">Dovednosti, kontakty, vybavení, zkušenosti.</small><textarea id="fSkills" maxlength="700"></textarea></div>
-        <div class="f"><label for="fRef"><span data-t="t45">Kdo vás doporučil</span> <em data-t="t46">(nepovinné)</em></label><input id="fRef" maxlength="80"></div>
-        <div class="f"><label for="fPrev"><span data-t="t47">Dřívější skupina</span> <em data-t="t48">(nepovinné)</em></label><small data-t="t49">Pokud jste v nějaké byl(a), v jaké a proč jste odešel(a).</small><textarea id="fPrev" maxlength="500" class="short"></textarea></div>
-      </fieldset>
 
       <p class="msg" id="formMsg" role="status"></p>
       <div class="nav">

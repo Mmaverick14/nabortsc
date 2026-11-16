@@ -66,18 +66,18 @@ async function save(key,obj){
 }
 
 /* vykreslení */
-function render(){
+function render(){lst();detail()}
+function lst(){
   var ids=Object.keys(apps).sort(function(a,b){return apps[b].at<apps[a].at?-1:1});
   $('filters').innerHTML=FILTERS.map(function(f){
     var n=ids.filter(function(i){return f[0]==='all'||stOf(i)===f[0]}).length;
     return'<button type="button" data-f="'+f[0]+'" class="'+(flt===f[0]?'on':'')+'">'+f[1]+' ('+n+')</button>';
   }).join('');
-  var shown=ids.filter(function(i){return flt==='all'||stOf(i)===flt});
+  var shown=vis(ids);
   $('list').innerHTML=shown.length?shown.map(function(i){
     var a=apps[i],t=tally(i);
-    return'<li data-id="'+i+'" class="'+stOf(i)+(sel===i?' on':'')+'"><b>'+esc(a.name)+'</b><small><span>'+esc(a.age)+' let</span><span>'+fdate(a.at)+'</span><span class="pro">+'+t.pro+'</span><span class="con">−'+t.proti+'</span><span class="abs">○'+t.zdrz+'</span></small></li>';
+    return'<li data-id="'+i+'" class="'+stOf(i)+(sel===i?' on':'')+'"><b>'+esc(a.name)+'</b><small>'+(a.age?'<span>'+esc(a.age)+' let</span>':'')+'<span>'+fdate(a.at)+'</span><span class="pro">+'+t.pro+'</span><span class="con">−'+t.proti+'</span><span class="abs">○'+t.zdrz+'</span></small></li>';
   }).join(''):'<li class="empty" style="cursor:default;border:0;background:none">Nic tu není.</li>';
-  detail();
 }
 function detail(){
   var el=$('detail'),a=apps[sel];
@@ -87,14 +87,8 @@ function detail(){
   var V=[['pro','Pro'],['proti','Proti'],['zdrz','Zdržuji se']];
   el.innerHTML=
    '<h2>'+esc(a.name)+(st==='accepted'?'<span class="badge accepted">Přijat</span>':st==='rejected'?'<span class="badge rejected">Zamítnut</span>':'')+'</h2>'+
-   '<div class="meta">'+esc(a.age)+' let · '+esc(a.origin)+' · podáno '+fdate(a.at)+'</div>'+
-   '<h4>Discord</h4><div class="dcrow"><code>'+esc(a.discord)+'</code><button class="mini" data-act="copy" type="button">Kopírovat</button></div>'+
-   '<h4>Telefon</h4><p class="ans">'+esc(a.phone)+'</p>'+
-   '<h4>Minulost</h4><p class="ans">'+esc(a.past)+'</p>'+
-   '<h4>Proč právě my</h4><p class="ans">'+esc(a.why)+'</p>'+
-   '<h4>Dovednosti a nabídka</h4><p class="ans">'+esc(a.skills)+'</p>'+
-   (a.ref?'<h4>Doporučil</h4><p class="ans">'+esc(a.ref)+'</p>':'')+
-   (a.prev?'<h4>Dřívější skupina</h4><p class="ans">'+esc(a.prev)+'</p>':'')+
+   '<div class="meta">'+(a.age?esc(a.age)+' let · ':'')+(a.origin?esc(a.origin)+' · ':'')+'podáno '+fdate(a.at)+'</div>'+
+   answers(a)+
    '<div class="sep"></div><h4>Váš hlas</h4>'+
    '<div class="votes">'+V.map(function(v){return'<button type="button" data-act="vote" data-v="'+v[0]+'" class="'+(mine.vote===v[0]?'on':'')+'">'+v[1]+'</button>'}).join('')+'</div>'+
    '<p class="tally"><span class="pro">Pro '+t.pro+'</span> · <span class="con">Proti '+t.proti+'</span> · Zdrželo se '+t.zdrz+'</p>'+
@@ -135,4 +129,19 @@ document.addEventListener('click',async function(e){
     if(q.error){say('boardMsg','Smazání se nepodařilo: '+q.error.message,'err');return}
     delete apps[sel];delete revs[sel];delete sts[sel];sel=null;render();
   }
+});
+
+/* odpovědi (nový formulář i staré přihlášky), hledání, export */
+var q='',LEG=[['phone','Telefon'],['discord','Discord'],['past','Minulost'],['why','Proč právě my'],['skills','Dovednosti a nabídka'],['ref','Doporučil'],['prev','Dřívější skupina']];
+function fOf(a){return a.fields||LEG.map(function(x){return{id:x[0],l:x[1],v:a[x[0]]}})}
+function answers(a){return fOf(a).filter(function(x){return x.v}).map(function(x){
+  return x.id==='discord'?'<h4>'+esc(x.l)+'</h4><div class="dcrow"><code>'+esc(x.v)+'</code><button class="mini" data-act="copy" type="button">Kopírovat</button></div>':'<h4>'+esc(x.l)+'</h4><p class="ans">'+esc(x.v)+'</p>'}).join('')}
+function ids0(){return Object.keys(apps).sort(function(a,b){return apps[b].at<apps[a].at?-1:1})}
+function vis(ids){return ids.filter(function(i){return(flt==='all'||stOf(i)===flt)&&(!q||JSON.stringify(apps[i]).toLowerCase().indexOf(q)>-1)})}
+$('q').addEventListener('input',function(){q=this.value.trim().toLowerCase();lst()});
+$('btnCsv').addEventListener('click',function(){
+  var cols=[],rows=vis(ids0()).map(function(i){var o={'Podáno':apps[i].at,'Stav':stOf(i)};fOf(apps[i]).forEach(function(f){if(cols.indexOf(f.l)<0)cols.push(f.l);o[f.l]=f.v});return o});
+  var cs=cols.concat(['Podáno','Stav']),E=function(v){return'"'+String(v==null?'':v).replace(/"/g,'""')+'"'};
+  var t='\ufeff'+cs.map(E).join(';')+'\n'+rows.map(function(o){return cs.map(function(c){return E(o[c])}).join(';')}).join('\n');
+  var a=document.createElement('a');a.href=URL.createObjectURL(new Blob([t],{type:'text/csv'}));a.download='prihlasky.csv';a.click();
 });
