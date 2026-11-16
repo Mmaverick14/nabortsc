@@ -54,3 +54,5 @@ body.editing [data-t].hl{outline:2px dashed var(--acc);outline-offset:3px}
 .fb button:disabled,.sec button[data-fa]:disabled{opacity:.3;cursor:default}
 
 .eb2{min-width:0}.eb{min-width:0}.elist textarea:not(.cb){min-height:2.8rem}
+
+.sec select{background:var(--surf);border:1px solid var(--border);color:var(--textb);font:500 .8rem var(--sans);padding:.3rem .4rem;flex-shrink:0}

@@ -11,9 +11,10 @@ var CFG={
 var $=function(id){return document.getElementById(id)};
 var step=0,FORM;
 var DEF_FORM={steps:[
-{t:'Kdo jste',f:[{id:'name',l:'Jméno a příjmení',type:'text',req:1,max:60,half:1},{id:'age',l:'Věk',type:'number',req:1,min:18,max:90,half:1},{id:'phone',l:'Telefonní číslo',type:'text',req:1,max:20,half:1},{id:'origin',l:'Odkud pocházíte',type:'text',req:1,max:80,half:1},{id:'discord',l:'Kontakt na Discordu',h:'Napíšeme vám tam, pokud o vás projevíme zájem.',type:'text',req:1,max:40}]},
-{t:'Vaše cesta',f:[{id:'past',l:'Vaše minulost',h:'Kdo jste, čím jste se živil(a), co vás přivedlo do města.',type:'textarea',req:1,max:900},{id:'why',l:'Proč právě my',h:'Co hledáte a co od nás čekáte.',type:'textarea',req:1,max:700}]},
-{t:'Co nabídnete',f:[{id:'skills',l:'Co umíte a co nabídnete',h:'Dovednosti, kontakty, vybavení, zkušenosti.',type:'textarea',req:1,max:700},{id:'ref',l:'Kdo vás doporučil',type:'text',max:80},{id:'prev',l:'Dřívější skupina',h:'Pokud jste v nějaké byl(a), v jaké a proč jste odešel(a).',type:'textarea',max:500}]}]};
+{t:'Vaše postava',g:'ic',f:[{id:'name',l:'Jméno a příjmení postavy',type:'text',req:1,max:60,half:1},{id:'age',l:'Věk postavy',type:'number',req:1,min:18,max:90,half:1},{id:'phone',l:'Telefonní číslo',type:'text',req:1,max:20,half:1},{id:'origin',l:'Odkud postava pochází',type:'text',req:1,max:80,half:1}]},
+{t:'Příběh postavy',g:'ic',f:[{id:'past',l:'Minulost postavy',h:'Kdo je, čím se živil(a), co ji přivedlo do města.',type:'textarea',req:1,max:900},{id:'why',l:'Proč právě my',h:'Co postava hledá a co od nás čeká.',type:'textarea',req:1,max:700}]},
+{t:'Co nabídne',g:'ic',f:[{id:'skills',l:'Co postava umí a co nabídne',h:'Dovednosti, kontakty, vybavení, zkušenosti.',type:'textarea',req:1,max:700},{id:'ref',l:'Kdo ji doporučil',type:'text',max:80},{id:'prev',l:'Dřívější skupina',h:'Pokud byla v nějaké, v jaké a proč odešla.',type:'textarea',max:500}]},
+{t:'Vy jako hráč',g:'ooc',f:[{id:'oocage',l:'Váš skutečný věk',type:'number',req:1,min:15,max:99,half:1},{id:'discord',l:'Kontakt na Discordu',h:'Napíšeme vám tam, pokud o vás projevíme zájem.',type:'text',req:1,max:40,half:1},{id:'rp',l:'Zkušenosti s role-play',h:'Jak dlouho hrajete RP, na jakých serverech, v jakých frakcích.',type:'textarea',max:600}]}]};
 FORM=DEF_FORM;
 var DC={hook:'',role:''},LAYOUT={order:[],hidden:[],custom:{}},BUILT=['uvod','kodex','cesta','prihlaska'],ROM=['I','II','III','IV','V','VI','VII','VIII','IX','X','XI','XII'];
 /* texty webu: výchozí jsou v HTML, úpravy vedení se načtou z databáze (klíče txt_<id>) */
@@ -84,7 +85,7 @@ function buildForm(){
   var P=$('prog'),S=$('steps');P.innerHTML='';S.innerHTML='';
   FORM.steps.forEach(function(s,i){
     var li=document.createElement('li');li.textContent=s.t;P.appendChild(li);
-    var fs=document.createElement('fieldset'),h='',pair=0;fs.className='step';fs.dataset.i=i;
+    var fs=document.createElement('fieldset'),h='<p class="grp '+(s.g==='ooc'?'ooc':'ic')+'">'+(s.g==='ooc'?'OOC · odpovídáte vy jako hráč':'IC · odpovídáte jako vaše postava')+'</p>',pair=0;fs.className='step';fs.dataset.i=i;
     s.f.forEach(function(f,j){
       var id='f_'+f.id,nx=s.f[j+1],c;
       if(f.type==='textarea')c='<textarea id="'+id+'"'+(f.max?' maxlength="'+f.max+'"':'')+'></textarea>';
@@ -133,7 +134,7 @@ $('appForm').addEventListener('submit',async function(ev){
 
   var id=Date.now().toString(36)+Math.random().toString(36).slice(2,6);
   var d={at:new Date().toISOString(),fields:[]};
-  FORM.steps.forEach(function(s){s.f.forEach(function(f){var v=val('f_'+f.id);d.fields.push({id:f.id,l:f.l,v:v});d[f.id]=v})});
+  FORM.steps.forEach(function(s){s.f.forEach(function(f){var v=val('f_'+f.id);d.fields.push({id:f.id,l:f.l,v:v,g:s.g==='ooc'?'ooc':'ic'});d[f.id]=v})});
   if(d.age)d.age=parseInt(d.age,10)||d.age;
   var btn=$('btnSend');btn.disabled=true;say('formMsg','Odesílám…');
   var okDb=false;
@@ -150,7 +151,7 @@ $('appForm').addEventListener('submit',async function(ev){
       title:'Nová přihláška: '+cut(d.name,60),
       description:'**'+cut(d.name,60)+'**'+(d.age?', '+d.age+' let':'')+(d.origin?', '+cut(d.origin,80):''),
       color:0xC49A14,
-      fields:d.fields.filter(function(f){return f.v&&f.id!=='name'}).slice(0,24).map(function(f){return{name:cut(f.l,250),value:cut(f.v,1000),inline:f.v.length<30}}),
+      fields:d.fields.filter(function(f){return f.v&&f.id!=='name'}).slice(0,24).map(function(f){return{name:cut((f.g==='ooc'?'OOC · ':'')+f.l,250),value:cut(f.v,1000),inline:f.v.length<30}}),
       footer:{text:'Přihláška '+id},
       timestamp:d.at
     };

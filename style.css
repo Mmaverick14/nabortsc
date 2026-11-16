@@ -109,3 +109,8 @@ footer{padding:2.5rem 0;text-align:center;font-size:.85rem;color:var(--muted)}
 /* výzva k nastavení IC jména */
 .icov{position:fixed;inset:0;z-index:100;background:rgba(0,0,0,.82);display:flex;align-items:center;justify-content:center;padding:1rem}
 .icov .panel{width:100%;max-width:26rem}
+
+/* IC / OOC */
+.grp{display:inline-block;margin:0 0 1.2rem;padding:.2rem .7rem;border:1px solid var(--acc-dim);color:var(--acc);font:600 .75rem var(--sans);letter-spacing:.14em;text-transform:uppercase}
+.grp.ooc{border-color:#5865f2;color:#aab1ff}
+h3.grp{display:block;border:0;border-bottom:1px solid var(--border);padding:0 0 .3rem;margin:1.8rem 0 0}

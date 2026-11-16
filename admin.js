@@ -134,9 +134,10 @@ document.addEventListener('click',async function(e){
 
 /* odpovědi (nový formulář i staré přihlášky), hledání, export */
 var q='',LEG=[['phone','Telefon'],['discord','Discord'],['past','Minulost'],['why','Proč právě my'],['skills','Dovednosti a nabídka'],['ref','Doporučil'],['prev','Dřívější skupina']];
-function fOf(a){return a.fields||LEG.map(function(x){return{id:x[0],l:x[1],v:a[x[0]]}})}
-function answers(a){return fOf(a).filter(function(x){return x.v}).map(function(x){
-  return x.id==='discord'?'<h4>'+esc(x.l)+'</h4><div class="dcrow"><code>'+esc(x.v)+'</code><button class="mini" data-act="copy" type="button">Kopírovat</button></div>':'<h4>'+esc(x.l)+'</h4><p class="ans">'+esc(x.v)+'</p>'}).join('')}
+function fOf(a){return a.fields||LEG.map(function(x){return{id:x[0],l:x[1],v:a[x[0]],g:x[0]==='discord'?'ooc':'ic'}})}
+function answers(a){var g0='';return fOf(a).filter(function(x){return x.v}).map(function(x){
+  var g=x.g==='ooc'?'ooc':'ic',H=g!==g0?'<h3 class="grp '+g+'">'+(g==='ooc'?'OOC':'IC')+'</h3>':'';g0=g;
+  return H+(x.id==='discord'?'<h4>'+esc(x.l)+'</h4><div class="dcrow"><code>'+esc(x.v)+'</code><button class="mini" data-act="copy" type="button">Kopírovat</button></div>':'<h4>'+esc(x.l)+'</h4><p class="ans">'+esc(x.v)+'</p>')}).join('')}
 function ids0(){return Object.keys(apps).sort(function(a,b){return apps[b].at<apps[a].at?-1:1})}
 function vis(ids){return ids.filter(function(i){return(flt==='all'||stOf(i)===flt)&&(!q||JSON.stringify(apps[i]).toLowerCase().indexOf(q)>-1)})}
 $('q').addEventListener('input',function(){q=this.value.trim().toLowerCase();lst()});

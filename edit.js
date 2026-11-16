@@ -51,9 +51,10 @@ var TY=[['text','Krátký text'],['textarea','Dlouhý text'],['number','Číslo'
 function core(f){return f.id==='name'||f.id==='discord'}
 function at(i,j,p){return' data-si="'+i+'" data-fi="'+j+'" data-p="'+p+'"'}
 function bt(a,i,j,ok){return'<button type="button" data-fa="'+a+'" data-si="'+i+'" data-fi="'+j+'"'+(ok?'':' disabled')+'>'+({sup:'↑',sdn:'↓',fup:'↑',fdn:'↓'}[a]||'Smazat')+'</button>'}
+function selG(s,i){return'<select data-si="'+i+'" data-p="g"><option value="ic"'+(s.g==='ooc'?'':' selected')+'>IC</option><option value="ooc"'+(s.g==='ooc'?' selected':'')+'>OOC</option></select>'}
 function formHTML(){
   return'<h4>Formulář přihlášky</h4>'+FF.steps.map(function(s,i){
-    return'<div class="fs"><div class="sec"><input class="ci" data-si="'+i+'" data-p="t" value="'+esc(s.t)+'" placeholder="Název kroku"><span>'+bt('sup',i,0,i>0)+bt('sdn',i,0,i<FF.steps.length-1)+bt('sdel',i,0,FF.steps.length>1&&!s.f.some(core))+'</span></div>'+
+    return'<div class="fs"><div class="sec"><input class="ci" data-si="'+i+'" data-p="t" value="'+esc(s.t)+'" placeholder="Název kroku">'+selG(s,i)+'<span>'+bt('sup',i,0,i>0)+bt('sdn',i,0,i<FF.steps.length-1)+bt('sdel',i,0,FF.steps.length>1&&!s.f.some(core))+'</span></div>'+
     s.f.map(function(f,j){
       var n=f.type==='number',tx=f.type==='text'||f.type==='textarea';
       return'<div class="fld"><input class="ci"'+at(i,j,'l')+' value="'+esc(f.l)+'" placeholder="Otázka"><input class="ci"'+at(i,j,'h')+' value="'+esc(f.h||'')+'" placeholder="Nápověda (nepovinné)">'+
@@ -86,7 +87,7 @@ box.addEventListener('click',function(e){
   else if(a==='fup')mv(st[i].f,j,-1);else if(a==='fdn')mv(st[i].f,j,1);
   else if(a==='fdel'){if(!confirm('Smazat tuto otázku?'))return;st[i].f.splice(j,1)}
   else if(a==='fadd')st[i].f.push(nf());
-  else if(a==='sadd')st.push({t:'Nový krok',f:[nf()]});
+  else if(a==='sadd')st.push({t:'Nový krok',g:'ic',f:[nf()]});
   frm();box.querySelector('#eForm').innerHTML=formHTML();
 });
 function loginUI(){
