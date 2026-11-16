@@ -13,7 +13,7 @@ function say(id,t,c){var e=$(id);e.textContent=t||'';e.className='msg'+(c?' '+c:
 function stOf(id){return sts[id]?sts[id].status:'wait'}
 function tally(id){var t={pro:0,proti:0,zdrz:0};Object.values(revs[id]||{}).forEach(function(r){if(t[r.vote]!=null)t[r.vote]++});return t}
 function myRev(id){return(revs[id]||{})[me.id.slice(0,8)]||{}}
-function myName(){var m=me.user_metadata||{};return m.name||m.full_name||(me.email||'').split('@')[0]}
+function myName(){var m=me.user_metadata||{};return m.ic_name||m.name||m.full_name||(me.email||'').split('@')[0]}
 function fdate(s){try{return new Date(s).toLocaleString('cs-CZ',{day:'numeric',month:'numeric',hour:'2-digit',minute:'2-digit'})}catch(e){return''}}
 
 /* přihlášení */
@@ -35,13 +35,14 @@ $('aMail').addEventListener('keydown',function(e){if(e.key==='Enter')$('btnLogin
 $('aPass').addEventListener('keydown',function(e){if(e.key==='Enter')$('btnLogin').click()});
 $('btnOut').addEventListener('click',function(){sb.auth.signOut()});
 $('btnRefresh').addEventListener('click',load);
+$('btnIC').addEventListener('click',function(){askIC(sb,me,function(u){me=u;$('meName').textContent=myName();if(sel)detail()},true)});
 function setMe(u){
   me=u||null;
   $('login').classList.toggle('hide',!!me);$('board').classList.toggle('hide',!me);$('me').classList.toggle('hide',!me);
-  if(me){$('meName').textContent=myName();load()}
+  if(me){$('meName').textContent=myName();load();askIC(sb,me,function(u){me=u;$('meName').textContent=myName()})}
 }
 sb.auth.getSession().then(function(r){setMe(r.data&&r.data.session?r.data.session.user:null)});
-sb.auth.onAuthStateChange(function(ev,s){if(ev==='SIGNED_IN'&&me&&s&&s.user.id===me.id)return;setMe(s?s.user:null)});
+sb.auth.onAuthStateChange(function(ev,s){if((ev==='SIGNED_IN'||ev==='USER_UPDATED')&&me&&s&&s.user.id===me.id){me=s.user;return}setMe(s?s.user:null)});
 
 /* načtení: app_<id>, rev_<id>_<uid8>, st_<id> */
 async function load(){

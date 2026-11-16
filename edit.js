@@ -6,6 +6,7 @@ if(document.fonts&&document.fonts.ready)document.fonts.ready.then(function(){res
 window.addEventListener('resize',function(){resizeAll()});
 var box=document.createElement('aside');box.className='epan';document.body.appendChild(box);
 document.body.classList.add('editing');
+var curUser=null;
 var els=[].slice.call(document.querySelectorAll('[data-t]')),saved={},started=false,dirty=false,L=clone(LAYOUT),savedL=JSON.stringify(LAYOUT),FF=clone(FORM),savedF=JSON.stringify(FORM);
 function esc(s){return String(s).replace(/[&<>"]/g,function(c){return{'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c]})}
 function g(el){
@@ -73,6 +74,7 @@ function onF(e){
   if(o[d.p]===v)return;o[d.p]=v;frm();
   if(d.p==='type')box.querySelector('#eForm').innerHTML=formHTML();
 }
+box.addEventListener('click',function(e){if(e.target.id==='eIC')askIC(sb,curUser,function(u){curUser=u;e.target.textContent='IC jméno: '+icOf(u)},true)});
 box.addEventListener('input',onF);box.addEventListener('change',onF);
 box.addEventListener('click',function(e){
   var b=e.target.closest('[data-fa]');if(!b)return;
@@ -107,7 +109,7 @@ function editUI(){
   els.forEach(function(el){var n=g(el);if(!groups[n]){groups[n]=[];order.push(n)}groups[n].push(el)});
   box.innerHTML='<div class="eh"><h3>Úprava textů</h3><p>Klikněte na text na stránce nebo ho najděte v seznamu. Změny se hned ukazují, uloží se tlačítkem.</p>'+
     '<div class="eb2"><button class="eb primary" id="eSave" type="button">Uložit změny</button><button class="eb" id="eDisc" type="button">Zahodit</button></div>'+
-    '<div class="eb2"><button class="eb" id="eReset" type="button">Obnovit původní texty</button><button class="eb" id="eExit" type="button">Konec úprav</button></div><div class="eb2"><a class="eb" href="admin.html">Hodnocení přihlášek</a><button class="eb" id="eFull" type="button">Na celou obrazovku</button></div><p class="emsg"></p></div>'+
+    '<div class="eb2"><button class="eb" id="eReset" type="button">Obnovit původní texty</button><button class="eb" id="eExit" type="button">Konec úprav</button></div><div class="eb2"><a class="eb" href="admin.html">Hodnocení přihlášek</a><button class="eb" id="eFull" type="button">Na celou obrazovku</button></div><div class="eb2"><button class="eb" id="eIC" type="button">IC jméno: '+esc(icOf(curUser)||'nenastaveno')+'</button></div><p class="emsg"></p></div>'+
     '<div class="elist"><div id="eSec">'+secHTML()+'</div><div id="eForm">'+formHTML()+'</div><div id="eDc">'+dcHTML()+'</div>'+order.map(function(n){return'<h4>'+esc(n)+'</h4>'+groups[n].map(function(el){return'<textarea data-k="'+el.dataset.t+'" rows="1">'+esc(el.textContent)+'</textarea>'}).join('')}).join('')+'</div>';
   box.querySelectorAll('textarea').forEach(size);
   box.querySelector('#eSave').onclick=save;
@@ -201,7 +203,8 @@ async function save(){
 TXT_READY.then(function(){
   FF=clone(FORM);savedF=JSON.stringify(FORM);L=clone(LAYOUT);savedL=JSON.stringify(LAYOUT);
   sb.auth.onAuthStateChange(function(_e,s){
-    if(s&&!started)editUI();
+    if(s)curUser=s.user;
+    if(s&&!started){editUI();askIC(sb,s.user,function(u){curUser=u;var b=box.querySelector('#eIC');if(b)b.textContent='IC jméno: '+icOf(u)})}
     else if(!s)loginUI();
   });
 });

@@ -31,7 +31,7 @@ var TXT_READY=fetch(CFG.SUPABASE_URL+'/rest/v1/'+CFG.TABLE+'?select=key,value&ke
 if(/[?&]upravit/.test(location.search)){
   var s1=document.createElement('script');
   s1.src='https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2.45.4/dist/umd/supabase.min.js';
-  s1.onload=function(){var s2=document.createElement('script');s2.src='edit.js';document.body.appendChild(s2)};
+  s1.onload=function(){var s0=document.createElement('script');s0.src='ic.js';s0.onload=function(){var s2=document.createElement('script');s2.src='edit.js';document.body.appendChild(s2)};document.body.appendChild(s0)};
   document.body.appendChild(s1);
 }
 function say(id,t,c){var e=$(id);e.textContent=t||'';e.className='msg'+(c?' '+c:'')}
